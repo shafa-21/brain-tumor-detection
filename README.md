@@ -145,6 +145,8 @@ Output:
 ---
 
 ## 📁 Project Structure
+
+```bash
 brain_tumor_detection/
 │
 ├── brain_tumor_detection/   # Django settings
@@ -169,7 +171,7 @@ brain_tumor_detection/
 ├── brain_tumor.h5
 ├── requirements.txt
 └── README.md
-
+```
 
 
 ---

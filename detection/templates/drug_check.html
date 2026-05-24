@@ -1,0 +1,217 @@
+{% extends 'index.html' %}
+{% block content %}
+
+<div class="container fade-in py-5">
+    <div class="row mb-5">
+        <div class="col-md-12">
+            <h6 class="text-info fw-bold text-uppercase tracking-widest mb-2" style="letter-spacing: 2px;">Precision Analytics</h6>
+            <h1 class="display-5 fw-bold text-white mb-3">
+                Predicting <span class="text-cyan">Treatment Efficiency.</span>
+            </h1>
+            <div class="header-line mb-4"></div>
+        </div>
+    </div>
+
+    <div class="row g-5">
+        <div class="col-lg-5">
+            <div class="neuro-card p-4">
+                <div class="d-flex align-items-center mb-4">
+                    <div class="icon-box me-3">
+                        <i class="fa-solid fa- microscope text-cyan"></i>
+                    </div>
+                    <h5 class="m-0 text-white fw-bold">Patient Diagnostics</h5>
+                </div>
+
+                <form method="POST" id="drugForm">
+                    {% csrf_token %}
+
+                    <div class="mb-4">
+                        <label class="neuro-label">Target Medication</label>
+                        <input type="text" name="drug"
+                               class="neuro-input"
+                               value="{{ drug_name|default:'' }}"
+                               placeholder="e.g. Temozolomide">
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-8 mb-4">
+                            <label class="neuro-label">Full Name</label>
+                            <input type="text" name="name" value="{{ request.POST.name }}" class="neuro-input" required>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <label class="neuro-label">Age</label>
+                            <input type="number" name="age" value="{{ request.POST.age }}" class="neuro-input" required>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <label class="neuro-label">Blood Group</label>
+                            <select name="blood" class="neuro-input">
+                                <option>A+</option><option>B+</option><option>O+</option><option>AB+</option>
+                                <option>A-</option><option>B-</option><option>O-</option><option>AB-</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <label class="neuro-label">Gender</label>
+                            <select name="gender" class="neuro-input">
+                                <option>Male</option><option>Female</option><option>Other</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-5">
+                        <label class="neuro-label">Tumor Classification</label>
+                        <select name="tumor_size" class="neuro-input">
+                            <option value="Small">Small (&lt; 2cm)</option>
+                            <option value="Medium">Medium (2-4cm)</option>
+                            <option value="Large">Large (&gt; 4cm)</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn-neuro-primary w-100" id="submitBtn">
+                        RUN ANALYSIS
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-lg-7">
+            {% if result %}
+            <div class="neuro-analysis-box p-5 h-100 d-flex flex-column justify-content-center align-items-center">
+                <div class="analysis-badge mb-4">
+                    <i class="fa-solid fa-brain"></i>
+                </div>
+                
+                <h4 class="text-secondary-emphasis mb-1">Efficiency Report</h4>
+                <h2 class="text-white fw-bold mb-4">{{ medicine|default:"Selected Drug" }}</h2>
+
+                <div class="efficiency-display mb-4">
+                    <svg viewBox="0 0 36 36" class="circular-chart-neuro">
+                        <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        <path class="circle-cyan" stroke-dasharray="{{ efficiency|default:0 }}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        <text x="18" y="21" class="percentage-text">{{ efficiency|default:0 }}%</text>
+                    </svg>
+                </div>
+
+                <div class="status-box text-center p-3">
+                    <span class="small text-info text-uppercase fw-bold">Outcome Prediction</span>
+                    <h3 class="text-cyan mt-1 mb-0">{{ result }}</h3>
+                </div>
+            </div>
+            {% else %}
+            <div class="neuro-placeholder-box h-100">
+                <div class="scanner-line"></div>
+                <i class="fa-solid fa-flask-vial fa-3x mb-3 text-cyan opacity-25"></i>
+                <p class="text-secondary">Awaiting diagnostic input parameters...</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+
+:root {
+    --bg-dark: #050a10;
+    --card-bg: rgba(13, 20, 30, 0.7);
+    --text-cyan: #00d1b2;
+    --border-glow: rgba(0, 209, 178, 0.2);
+}
+
+.text-cyan { color: var(--text-cyan) !important; }
+
+.header-line {
+    width: 60px;
+    height: 4px;
+    background: var(--text-cyan);
+    border-radius: 2px;
+}
+
+.neuro-card {
+    background: var(--card-bg);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 20px;
+    backdrop-filter: blur(15px);
+}
+
+.neuro-analysis-box {
+    background: linear-gradient(145deg, rgba(10,15,25,0.9) 0%, rgba(5,10,15,1) 100%);
+    border: 1px solid var(--border-glow);
+    border-radius: 24px;
+    position: relative;
+    overflow: hidden;
+}
+
+.neuro-placeholder-box {
+    border: 2px dashed rgba(255,255,255,0.05);
+    border-radius: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background: rgba(255,255,255,0.01);
+}
+
+.neuro-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: #64748b;
+    font-weight: 700;
+    margin-bottom: 8px;
+    display: block;
+    letter-spacing: 1px;
+}
+
+.neuro-input {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.3) !important;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    padding: 12px 15px;
+    color: white !important;
+    transition: all 0.3s;
+}
+
+.neuro-input:focus {
+    border-color: var(--text-cyan);
+    box-shadow: 0 0 15px var(--border-glow);
+    outline: none;
+}
+
+.btn-neuro-primary {
+    background: linear-gradient(90deg, #00d1b2 0%, #00a896 100%);
+    border: none;
+    padding: 14px;
+    border-radius: 12px;
+    color: #050a10;
+    font-weight: 800;
+    letter-spacing: 1px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-neuro-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(0, 209, 178, 0.4);
+}
+
+.circular-chart-neuro { width: 220px; height: 220px; }
+.circle-bg { fill: none; stroke: rgba(255,255,255,0.05); stroke-width: 2; }
+.circle-cyan { fill: none; stroke: var(--text-cyan); stroke-width: 2.5; stroke-linecap: round; transition: stroke-dasharray 1s ease-in-out; }
+.percentage-text { fill: white; font-size: 6px; font-weight: bold; text-anchor: middle; dominant-baseline: middle; }
+
+.analysis-badge {
+    width: 60px;
+    height: 60px;
+    background: rgba(0, 209, 178, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-cyan);
+    font-size: 1.5rem;
+    border: 1px solid var(--border-glow);
+}
+</style>
+{% endblock %}

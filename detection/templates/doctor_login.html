@@ -1,0 +1,282 @@
+{% extends 'index.html' %}
+{% block content %}
+
+<div class="glow-wrapper">
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+</div>
+
+<div class="row justify-content-center align-items-center" style="min-height: 85vh;">
+    <div class="col-md-5 col-lg-4">
+        <div class="neuro-login-card p-4 p-md-5 fade-up">
+            <div class="scan-line"></div>
+            
+            <div class="text-center mb-2">
+                <span class="security-badge">
+                    <i class="fa-solid fa-shield-halved me-2"></i>Security Clearance Required
+                </span>
+            </div>
+
+            <div class="text-center mb-5 position-relative">
+                <div class="icon-glow-box mx-auto mb-3">
+                    <i class="fa-solid fa-user-doctor fa-2x text-cyan"></i>
+                </div>
+                <h2 class="fw-bold text-white tracking-tight">Staff <span class="text-cyan">Authentication</span></h2>
+                <div class="header-line-center mx-auto"></div>
+            </div>
+
+            {% if error %}
+            <div class="alert-neuro mb-4">
+                <i class="fa-solid fa-triangle-exclamation me-2"></i>{{ error }}
+            </div>
+            {% endif %}
+
+            <form method="POST" id="loginForm">
+                {% csrf_token %}
+
+                <div class="mb-4">
+                    <label class="neuro-label">Medical ID</label>
+                    <div class="input-group-neuro">
+                        <i class="fa-solid fa-id-card"></i>
+                        <input type="text" name="doctor_id" 
+                               class="neuro-input" 
+                               placeholder="Admin" 
+                               required>
+                    </div>
+                </div>
+
+                <div class="mb-5">
+                    <label class="neuro-label">Encryption Key (Password)</label>
+                    <div class="input-group-neuro">
+                        <i class="fa-solid fa-key"></i>
+                        <input type="password" name="password" id="passwordField" 
+                               class="neuro-input" 
+                               placeholder="datadata" 
+                               required>
+                        <i class="fa-solid fa-eye" id="togglePassword" style="cursor:pointer; right: 15px; left: auto;"></i>
+                    </div>
+                </div>
+
+                <button type="submit" id="loginBtn" class="btn-neuro-primary w-100 mb-4">
+                    INITIALIZE ACCESS <i class="fa-solid fa-chevron-right ms-2"></i>
+                </button>
+
+                <div class="text-center">
+                    <a href="{% url 'login' %}" class="back-link">
+                        <i class="fa-solid fa-arrow-left-long me-2"></i>Return to Public Portal
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+:root {
+    --text-cyan: #2dd4bf;
+    --bg-dark: #020617;
+    --card-bg: rgba(15, 23, 42, 0.85);
+    --border-cyan: rgba(45, 212, 191, 0.2);
+    --glass-border: rgba(255, 255, 255, 0.1);
+}
+
+/* Background Effects */
+.glow-wrapper {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+}
+.glow-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.4;
+    animation: drift 20s infinite alternate;
+}
+.orb-1 { width: 500px; height: 500px; background: rgba(45, 212, 191, 0.15); top: -10%; right: -10%; }
+.orb-2 { width: 400px; height: 400px; background: rgba(56, 189, 248, 0.1); bottom: -10%; left: -10%; }
+
+@keyframes drift {
+    from { transform: translate(0, 0); }
+    to { transform: translate(60px, 30px); }
+}
+
+/* Card Styling */
+.neuro-login-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(25px);
+    border: 1px solid var(--glass-border);
+    border-radius: 28px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+/* Scanning Effect */
+.scan-line {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--text-cyan), transparent);
+    opacity: 0.5;
+    animation: scan 4s linear infinite;
+    z-index: 2;
+}
+
+@keyframes scan {
+    0% { top: 0%; }
+    100% { top: 100%; }
+}
+
+/* Header Accents */
+.security-badge {
+    background: rgba(45, 212, 191, 0.1);
+    color: var(--text-cyan);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    font-weight: 800;
+    padding: 6px 14px;
+    border-radius: 50px;
+    letter-spacing: 1.5px;
+    border: 1px solid var(--border-cyan);
+    display: inline-block;
+}
+
+.icon-glow-box {
+    width: 70px; height: 70px;
+    background: rgba(45, 212, 191, 0.05);
+    border: 1px solid var(--border-cyan);
+    border-radius: 20px;
+    display: flex;
+    align-items: center; justify-content: center;
+    box-shadow: 0 0 25px rgba(45, 212, 191, 0.15);
+}
+
+.header-line-center {
+    width: 40px; height: 3px;
+    background: var(--text-cyan);
+    border-radius: 10px;
+    margin-top: 10px;
+    box-shadow: 0 0 10px var(--text-cyan);
+}
+
+/* Input Styling */
+.neuro-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: #94a3b8;
+    font-weight: 700;
+    margin-bottom: 8px;
+    display: block;
+    letter-spacing: 1px;
+}
+
+.input-group-neuro {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-group-neuro i {
+    position: absolute;
+    left: 15px;
+    color: #475569;
+    transition: 0.3s;
+}
+
+.neuro-input {
+    width: 100%;
+    background: rgba(2, 6, 23, 0.6) !important;
+    border: 1px solid var(--glass-border);
+    border-radius: 14px;
+    padding: 14px 15px 14px 45px;
+    color: white !important;
+    transition: all 0.3s ease;
+}
+
+.neuro-input:focus {
+    border-color: var(--text-cyan);
+    box-shadow: 0 0 15px rgba(45, 212, 191, 0.2);
+    outline: none;
+    transform: translateY(-1px);
+}
+
+.neuro-input:focus + i, .input-group-neuro:focus-within i {
+    color: var(--text-cyan);
+}
+
+/* Button */
+.btn-neuro-primary {
+    background: var(--text-cyan);
+    border: none;
+    padding: 16px;
+    border-radius: 14px;
+    color: #020617;
+    font-weight: 800;
+    letter-spacing: 1px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 10px 20px -5px rgba(45, 212, 191, 0.4);
+}
+
+.btn-neuro-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 30px -5px rgba(45, 212, 191, 0.5);
+    background: #fff;
+}
+
+/* Links & Alerts */
+.back-link {
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: 0.3s;
+    font-weight: 600;
+}
+
+.back-link:hover {
+    color: var(--text-cyan);
+}
+
+.alert-neuro {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    color: #f87171;
+    padding: 12px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+.fade-up {
+    animation: fadeUp 0.8s ease-out forwards;
+}
+
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.text-cyan { color: var(--text-cyan); }
+</style>
+
+<script>
+const toggle = document.getElementById("togglePassword");
+const password = document.getElementById("passwordField");
+
+toggle.addEventListener("click", () => {
+    const type = password.getAttribute("type") === "password" ? "text" : "password";
+    password.setAttribute("type", type);
+    toggle.classList.toggle("fa-eye-slash");
+    toggle.style.color = type === "text" ? "#2dd4bf" : "#475569";
+});
+
+document.getElementById("loginForm").addEventListener("submit", function() {
+    const btn = document.getElementById("loginBtn");
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>DECRYPTING...';
+    btn.disabled = true;
+});
+</script>
+
+{% endblock %}

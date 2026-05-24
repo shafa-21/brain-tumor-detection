@@ -1,0 +1,9 @@
+Django>=4.2
+tensorflow>=2.10
+numpy>=1.23
+opencv-python
+pillow
+scikit-learn
+matplotlib
+pandas
+h5py

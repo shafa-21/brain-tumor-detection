@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.sqlite3
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv/
+
+# Django
+db.sqlite3
+media/
+dataset/
+staticfiles/
+*.log
+
+# Model files (IMPORTANT for ML projects)
+*.h5
+*.keras
+*.pkl
+*.joblib
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/
+
+# PyCharm
+.idea/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# TensorFlow / Keras logs
+logs/
+checkpoints/
+
+# Environment variables
+.env

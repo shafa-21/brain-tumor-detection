@@ -1,0 +1,298 @@
+{% extends 'index.html' %}
+{% block content %}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+:root {
+    --bg-dark: #020617; /* Darker navy to match home page depth */
+    --accent-teal: #36D399;
+    --card-bg: rgba(15, 23, 42, 0.6);
+    --border-glass: rgba(255, 255, 255, 0.08);
+}
+
+body {
+    background: var(--bg-dark);
+    color: #ffffff;
+    font-family: 'Inter', sans-serif; /* Ensuring modern font feel */
+}
+
+/* Matching Home Page Hero Text */
+.display-5 {
+    font-weight: 800 !important;
+    letter-spacing: -1px;
+}
+
+.text-accent {
+    color: var(--accent-teal) !important;
+}
+
+.section-label {
+    color: var(--accent-teal);
+    text-transform: uppercase;
+    font-weight: 700;
+    font-size: 0.8rem;
+    letter-spacing: 1.5px;
+}
+
+/* Glass Card - Matched to "Neural Analysis" card */
+.glass-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--border-glass);
+    border-radius: 24px;
+    padding: 2.5rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+/* Form Controls */
+.form-control-custom {
+    background: rgba(2, 6, 23, 0.5) !important;
+    border: 1px solid var(--border-glass) !important;
+    color: #ffffff !important;
+    border-radius: 12px;
+    padding: 14px;
+    transition: all 0.3s ease;
+}
+
+.form-control-custom:focus {
+    border-color: var(--accent-teal) !important;
+    box-shadow: 0 0 0 4px rgba(54, 211, 153, 0.1);
+}
+
+/* Summary Box Styling */
+.summary-box {
+    border-left: 3px solid var(--accent-teal);
+    background: rgba(54, 211, 153, 0.05);
+    border-radius: 0 12px 12px 0;
+    padding: 15px;
+    margin-bottom: 1rem;
+}
+
+/* Button Styling - Matched to "Launch Scanner" */
+.btn-brand {
+    background: var(--accent-teal) !important;
+    color: #020617 !important;
+    border: none;
+    font-weight: 700 !important;
+    border-radius: 12px;
+    padding: 1rem;
+    text-transform: none; /* Home page buttons aren't all-caps */
+    transition: all 0.3s ease;
+}
+
+.btn-brand:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(54, 211, 153, 0.3);
+    opacity: 0.9;
+}
+
+.btn-slot {
+    border: 1px solid var(--border-glass);
+    color: #cbd5e1 !important;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 10px;
+}
+
+.btn-check:checked + .btn-slot {
+    background: var(--accent-teal) !important;
+    color: #020617 !important;
+    border-color: var(--accent-teal);
+}
+/* 1. Brighten the main description sub-header */
+.booking-container p.text-muted {
+    color: #94a3b8 !important; /* Lighter slate gray */
+    opacity: 1 !important;
+}
+
+/* 2. Fix Form Labels (FULL LEGAL NAME, CONTACT NUMBER, etc.) */
+label.text-muted {
+    color: #cbd5e1 !important; /* Bright silver/gray */
+    font-weight: 700 !important;
+    letter-spacing: 0.05rem;
+    opacity: 1 !important;
+}
+
+/* 3. Fix Booking Summary Labels (PATIENT, CONDITION, etc.) */
+.summary-box .text-muted, 
+.col-6 .text-muted {
+    color: #94a3b8 !important; /* Visible gray */
+    font-weight: 800 !important;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+}
+
+/* 4. Ensure placeholders are visible but distinct */
+.form-control-custom::placeholder {
+    color: #475569 !important; /* Mid-tone slate */
+}
+
+/* 5. Fix "---" and dynamic text visibility in the summary */
+#previewName, #previewCondition, #previewDate, #previewTime {
+    color: #ffffff !important;
+    opacity: 1 !important;
+}
+
+/* 6. Fix Available Slot text visibility */
+.btn-slot {
+    color: #ffffff !important;
+    font-weight: 500;
+}
+</style>
+
+<div class="container booking-container fade-up py-5">
+    <div class="text-center mb-5">
+        <span class="section-label d-block mb-2">Medical Portal</span>
+        <h1 class="display-5">Consultation <span class="text-accent">Scheduling.</span></h1>
+        <p class="text-white-50 fs-5 mx-auto mt-3" style="max-width: 600px; opacity: 0.8;">
+            Secure your slot with our neuro-specialists for a detailed MRI analysis and treatment planning.
+        </p>
+    </div>
+
+    {% if success %}
+    <div class="alert alert-success border-0 bg-accent text-dark fw-bold text-center mb-4 py-3 rounded-4">
+        <i class="fa-solid fa-circle-check me-2"></i> Appointment logged successfully!
+    </div>
+    {% endif %}
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="row g-4">
+            
+            <div class="col-lg-8">
+                <div class="glass-card h-100">
+                    <div class="d-flex align-items-center mb-5">
+                        <div class="p-3 rounded-4 me-3" style="background: rgba(54, 211, 153, 0.1);">
+                            <i class="fa-solid fa-brain text-accent fs-4"></i>
+                        </div>
+                        <h3 class="mb-0 fw-bold">Patient & Clinical Details</h3>
+                    </div>
+
+                    <div class="row g-4">
+                        <div class="col-md-12">
+                            <label class="small fw-bold text-muted mb-2 d-block">FULL LEGAL NAME</label>
+                            <input type="text" name="name" id="nameField"
+                                   placeholder="e.g. John Doe"
+                                   value="{{ request.POST.name|default:request.user.username }}"
+                                   class="form-control form-control-custom" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="small fw-bold text-muted mb-2 d-block">CONTACT NUMBER</label>
+                            <input type="tel" name="phone" id="phoneField"
+                                   placeholder="+1 (555) 000-0000"
+                                   value="{{ request.POST.phone }}"
+                                   class="form-control form-control-custom" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="small fw-bold text-muted mb-2 d-block">DIAGNOSED CONDITION</label>
+                            <select name="condition" id="conditionField" class="form-control form-control-custom" required>
+                                <option value="" disabled selected>Select MRI Findings</option>
+                                <option value="Glioma Grade 1">Glioma Grade 1</option>
+                                <option value="Glioma Grade 2">Glioma Grade 2</option>
+                                <option value="Glioma Grade 3">Glioma Grade 3</option>
+                                <option value="Glioma Grade 4">Glioma Grade 4</option>
+
+                                <option value="No Tumor">No Tumor</option>
+                            </select>
+                        </div>
+
+                        <div class="col-12 mt-5">
+                            <div class="d-flex align-items-center mb-4">
+                                <div class="p-3 rounded-4 me-3" style="background: rgba(54, 211, 153, 0.1);">
+                                    <i class="fa-solid fa-calendar-check text-accent fs-4"></i>
+                                </div>
+                                <h3 class="mb-0 fw-bold">Select Appointment</h3>
+                            </div>
+                            <div class="row g-4">
+                                <div class="col-md-5">
+                                    <label class="small fw-bold text-muted mb-2 d-block">DATE</label>
+                                    <input type="date" name="date" id="dateInput"
+                                           class="form-control form-control-custom" required>
+                                </div>
+                                <div class="col-md-7">
+                                    <label class="small fw-bold text-muted mb-2 d-block">AVAILABLE SLOTS</label>
+                                    <div class="row g-2">
+                                        {% for t in time_slots|default:"['09:00 AM', '11:00 AM', '02:00 PM']" %}
+                                        <div class="col-4">
+                                            <input type="radio" class="btn-check" name="time" value="{{ t }}" id="t{{ forloop.counter }}" required>
+                                            <label class="btn btn-slot w-100 py-3" for="t{{ forloop.counter }}">{{ t }}</label>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="glass-card h-100 d-flex flex-column border-accent" style="border-color: rgba(54, 211, 153, 0.2) !important;">
+                    <h4 class="fw-bold mb-4">Booking Summary</h4>
+                    
+                    <div class="flex-grow-1">
+                        <div class="summary-box">
+                            <span class="text-muted small fw-bold">PATIENT</span>
+                            <p class="fs-5 fw-bold mb-0" id="previewName">---</p>
+                        </div>
+                        
+                        <div class="summary-box">
+                            <span class="text-muted small fw-bold">CONDITION</span>
+                            <p class="fs-5 fw-bold mb-0 text-accent" id="previewCondition">---</p>
+                        </div>
+
+                        <div class="row g-0 mt-4 px-2">
+                            <div class="col-6">
+                                <span class="text-muted small fw-bold d-block">DATE</span>
+                                <p class="fw-bold mb-0" id="previewDate">---</p>
+                            </div>
+                            <div class="col-6 text-end">
+                                <span class="text-muted small fw-bold d-block">TIME</span>
+                                <p class="fw-bold mb-0" id="previewTime">---</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-5">
+                        <button type="submit" class="btn btn-brand w-100 shadow-lg">
+                            Confirm Appointment <i class="fa-solid fa-chevron-right ms-2 small"></i>
+                        </button>
+                        <p class="text-center text-muted small mt-3">
+                            <i class="fa-solid fa-shield-halved me-1"></i> HIPAA Compliant Data Encryption
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const dateInput = document.getElementById("dateInput");
+    const today = new Date().toISOString().split("T")[0];
+    dateInput.setAttribute("min", today);
+
+    const inputs = {
+        name: [document.getElementById('nameField'), document.getElementById('previewName')],
+        condition: [document.getElementById('conditionField'), document.getElementById('previewCondition')],
+        date: [dateInput, document.getElementById('previewDate')]
+    };
+
+    Object.keys(inputs).forEach(key => {
+        inputs[key][0].addEventListener('input', (e) => {
+            inputs[key][1].innerText = e.target.value || "---";
+        });
+    });
+
+    document.querySelectorAll('input[name="time"]').forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            document.getElementById('previewTime').innerText = e.target.value;
+        });
+    });
+});
+</script>
+
+{% endblock %}

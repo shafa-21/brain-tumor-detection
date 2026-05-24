@@ -1,0 +1,236 @@
+{% extends 'index.html' %}
+{% block content %}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<div class="dashboard-container py-4">
+    
+    <div class="row mb-4 align-items-end">
+        <div class="col-md-8">
+            <h6 class="text-cyan fw-bold text-uppercase tracking-widest mb-1" style="letter-spacing: 2px; font-size: 0.75rem;">Command Center</h6>
+            <h2 class="display-6 fw-bold text-white mb-0">Analysis <span class="text-cyan">Dashboard.</span></h2>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="stat-card stat-pending">
+                <div class="stat-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                <div class="stat-content">
+                    <small>Pending</small>
+                    <h3>{{ pending_count }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card stat-critical">
+                <div class="stat-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                <div class="stat-content">
+                    <small>Critical Cases</small>
+                    <h3 class="text-danger">{{ critical_count }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card stat-today">
+                <div class="stat-icon"><i class="fa-solid fa-calendar-check"></i></div>
+                <div class="stat-content">
+                    <small>Today's Appointments</small>
+                    <h3>{{ today_appointments }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card stat-system">
+                <div class="stat-icon"><i class="fa-solid fa-microchip text-cyan"></i></div>
+                <div class="stat-content">
+                    <small>Latency</small>
+                    <h3>~450ms</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-9">
+            <div class="neuro-table-container p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="m-0 fw-bold text-white"><i class="fa-solid fa-list-check me-2 text-cyan"></i>Analysis Queue</h5>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="neuro-table">
+                        <thead>
+                            <tr>
+                                <th>Patient UID</th>
+                                <th>Clinical Observation</th>
+                                <th>AI Inference</th>
+                                <th>State</th>
+                                <th class="text-end">Verification</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for appt in appointments %}
+                            <tr>
+                                <td><span class="uid-tag">#{{ appt.id|slice:":5"|default:"2044" }}</span></td>
+                                <td class="text-white-50 small">{{ appt.condition }}</td>
+                                <td>
+                                    {% if "no tumor" in appt.condition|lower %}
+                                        <span class="badge-neuro badge-neg">CLEAR</span>
+                                    {% else %}
+                                        <span class="badge-neuro badge-pos">DETECTION</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="status-text">{{ appt.status }}</span>
+                                </td>
+                                <td class="text-end">
+                                    {% if appt.status|lower == 'pending' %}
+                                    <div class="action-group">
+                                        <a href="{% url 'update_status' appt.id 'Approved' %}" class="btn-action btn-confirm" title="Confirm Findings">
+                                            <i class="fa fa-check"></i>
+                                        </a>
+                                        <a href="{% url 'update_status' appt.id 'Completed' %}" class="btn-action btn-dismiss" title="Dismiss">
+                                            <i class="fa fa-times"></i>
+                                        </a>
+                                    </div>
+                                    {% else %}
+                                        <span class="text-muted x-small"><i class="fa-solid fa-circle-check me-1"></i>Archived</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center py-5">
+                                    <i class="fa-solid fa-inbox fa-2x mb-3 text-secondary opacity-25"></i>
+                                    <p class="text-secondary">No active cases in queue.</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3">
+            <div class="neuro-sidebar p-4">
+                <h6 class="fw-bold mb-4 text-white text-uppercase small tracking-widest"><i class="fa-solid fa-clock me-2 text-cyan"></i>Live Timeline</h6>
+                <div class="timeline-container">
+                    {% for appt in schedule %}
+                    <div class="timeline-item">
+                        <div class="time-stamp">{{ appt.time }}</div>
+                        <div class="patient-name">{{ appt.name }}</div>
+                        <div class="timeline-dot"></div>
+                    </div>
+                    {% empty %}
+                    <div class="text-center py-4">
+                        <small class="text-muted">No upcoming events.</small>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+:root {
+    --bg-dark: #050a10;
+    --card-bg: rgba(13, 20, 30, 0.7);
+    --text-cyan: #00d1b2;
+    --border-glow: rgba(0, 209, 178, 0.2);
+}
+
+.text-cyan { color: var(--text-cyan) !important; }
+
+/* Dashboard Container */
+.dashboard-container {
+    background: #02060a;
+    min-height: 100vh;
+    font-family: 'Inter', sans-serif;
+}
+
+/* System Status Pill */
+.system-status-pill {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 6px 15px;
+    border-radius: 50px;
+    display: inline-flex;
+    align-items: center;
+}
+
+.pulse-dot {
+    height: 8px;
+    width: 8px;
+    background: var(--text-cyan);
+    border-radius: 50%;
+    margin-right: 10px;
+    box-shadow: 0 0 8px var(--text-cyan);
+    animation: pulse-glow 2s infinite;
+}
+
+/* Stat Cards */
+.stat-card {
+    background: var(--card-bg);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    transition: 0.3s;
+}
+
+.stat-card:hover { transform: translateY(-5px); border-color: var(--border-glow); }
+
+.stat-icon {
+    font-size: 1.5rem;
+    margin-right: 15px;
+    color: #475569;
+}
+
+.stat-content small { font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; font-weight: 700; }
+.stat-content h3 { margin: 0; color: white; font-weight: 800; }
+
+/* Table Styling */
+.neuro-table-container {
+    background: var(--card-bg);
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+.neuro-table { width: 100%; border-collapse: separate; border-spacing: 0 12px; }
+.neuro-table thead th { color: #64748b; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; padding: 10px; }
+.neuro-table tbody tr { background: rgba(0,0,0,0.2); transition: 0.2s; }
+.neuro-table tbody tr:hover { background: rgba(0, 209, 178, 0.05); }
+.neuro-table td { padding: 15px 10px; vertical-align: middle; border-top: 1px solid rgba(255,255,255,0.02); border-bottom: 1px solid rgba(255,255,255,0.02); }
+
+.uid-tag { font-family: 'JetBrains Mono', monospace; color: var(--text-cyan); font-weight: bold; font-size: 0.85rem; }
+
+/* Badges */
+.badge-neuro { padding: 4px 10px; border-radius: 6px; font-size: 0.65rem; font-weight: 800; letter-spacing: 0.5px; }
+.badge-pos { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.2); }
+.badge-neg { background: rgba(0, 209, 178, 0.15); color: var(--text-cyan); border: 1px solid var(--border-glow); }
+
+/* Sidebar */
+.neuro-sidebar { background: rgba(0,0,0,0.2); border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); }
+.timeline-item { position: relative; padding-left: 25px; margin-bottom: 25px; border-left: 2px solid rgba(255,255,255,0.05); }
+.timeline-dot { position: absolute; left: -6px; top: 5px; width: 10px; height: 10px; background: var(--text-cyan); border-radius: 50%; box-shadow: 0 0 10px var(--text-cyan); }
+.time-stamp { color: var(--text-cyan); font-size: 0.75rem; font-weight: 800; }
+.patient-name { color: white; font-weight: 600; font-size: 0.9rem; }
+
+/* Actions */
+.action-group { display: flex; gap: 8px; justify-content: flex-end; }
+.btn-action { width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); color: white; transition: 0.3s; text-decoration: none;}
+.btn-confirm:hover { background: #059669; border-color: #059669; }
+.btn-dismiss:hover { background: #dc2626; border-color: #dc2626; }
+
+@keyframes pulse-glow {
+    0% { opacity: 0.5; }
+    50% { opacity: 1; }
+    100% { opacity: 0.5; }
+}
+</style>
+
+{% endblock %}

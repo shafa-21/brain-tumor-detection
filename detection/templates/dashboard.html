@@ -1,0 +1,165 @@
+{% extends 'index.html' %}
+{% block content %}
+
+<div class="container py-4 fade-up">
+
+    <div class="row mb-5 align-items-end">
+        <div class="col-md-8">
+            <span class="section-label" style="color: var(--accent); opacity: 0.9;">Medical Archives</span>
+            <h2 class="fw-bold mb-0 text-white">
+                <i class="fa-solid fa-layer-group me-2" style="color: var(--accent);"></i>
+                Detection History
+            </h2>
+        </div>
+        <div class="col-md-4 text-md-end mt-3 mt-md-0">
+            <a href="{% url 'detect' %}" class="btn btn-primary shadow-sm">
+                <i class="fa-solid fa-plus me-2"></i>New Analysis
+            </a>
+        </div>
+    </div>
+
+    <div class="glass-card p-0 border-0 overflow-hidden" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 24px;">
+        
+        <div class="d-none d-md-grid py-3 px-4" style="background: rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.1); display: grid; grid-template-columns: 100px 1.5fr 1fr 1.5fr 1fr;">
+            <span class="header-text">SCAN</span>
+            <span class="header-text">CLASSIFICATION</span>
+            <span class="header-text">PATHOLOGY GRADE</span>
+            <span class="header-text">AI CONFIDENCE</span>
+            <span class="header-text text-end">DATE</span>
+        </div>
+
+        <div class="history-rows">
+            {% for item in data %}
+            <div class="history-row-item py-4 px-4" style="display: grid; grid-template-columns: 100px 1.5fr 1fr 1.5fr 1fr; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); transition: all 0.3s ease;">
+                
+                <div class="scan-preview">
+                    {% if item.image %}
+                        <div class="position-relative d-inline-block">
+                            <img src="{{ item.image.url }}" 
+                                 class="rounded-3 border border-secondary border-opacity-50"
+                                 style="width:60px; height:60px; object-fit:cover;">
+                            <a href="{{ item.image.url }}" target="_blank" class="preview-overlay">
+                                <i class="fa-solid fa-expand"></i>
+                            </a>
+                        </div>
+                    {% else %}
+                        <div class="rounded-3 bg-dark d-flex align-items-center justify-content-center border border-secondary border-opacity-25" style="width:60px; height:60px;">
+                            <i class="fa-solid fa-image-slash text-white-50"></i>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div>
+                    {% if item.result == 'glioma' %}
+                        <div class="d-flex align-items-center text-danger fw-bold">
+                            <span class="status-indicator bg-danger pulse-red me-2"></span>
+                            Positive Case
+                        </div>
+                        <div class="row-desc">Tumor detected</div>
+                    {% else %}
+                        <div class="d-flex align-items-center fw-bold" style="color: var(--accent);">
+                            <span class="status-indicator me-2" style="background: var(--accent);"></span>
+                            Negative Case
+                        </div>
+                        <div class="row-desc">No pathology found</div>
+                    {% endif %}
+                </div>
+
+                <div>
+                   {% if "Grade IV" in item.stage %}
+                        <span class="grade-pill grade-4">Grade IV</span>
+                    {% elif "Grade III" in item.stage %}
+                        <span class="grade-pill grade-3">Grade III</span>
+                    {% elif "Grade II" in item.stage %}
+                        <span class="grade-pill grade-2">Grade II</span>
+                    {% elif "Grade I" in item.stage %}
+                        <span class="grade-pill grade-1">Grade I</span>
+                    {% else %}
+                        <span class="badge rounded-pill border border-secondary border-opacity-50 text-white-50 fw-normal px-3">Cleared</span>
+                    {% endif %}
+                </div>
+
+                <div class="pe-4">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="row-desc">Reliability</span>
+                        <span class="small fw-bold text-white">{{ item.confidence }}%</span>
+                    </div>
+                    <div class="progress" style="height: 6px; background: rgba(0,0,0,0.3);">
+                        <div class="progress-bar" 
+                             style="width: {{ item.confidence }}%; background: {% if item.confidence > 80 %}var(--accent){% elif item.confidence > 50 %}#fbbf24{% else %}#ef4444{% endif %};">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-end">
+                    <div class="text-white small fw-bold">{{ item.date|date:"d M Y" }}</div>
+                    <div class="row-desc" style="font-size: 0.75rem;">{{ item.date|date:"H:i A" }}</div>
+                </div>
+
+            </div>
+            {% empty %}
+            <div class="text-center py-5">
+                <i class="fa-solid fa-box-open fa-3x mb-3 text-white-50"></i>
+                <h5 class="text-white">No records found</h5>
+                <a href="{% url 'detect' %}" class="btn btn-outline-light btn-sm mt-2">Start Scan</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Visibility Fixes */
+    .header-text {
+        color: rgba(255, 255, 255, 0.7); /* Brighter headers */
+        font-size: 0.75rem;
+        font-weight: 800;
+        letter-spacing: 1px;
+    }
+
+    .row-desc {
+        color: #a0aec0 !important; /* Lighter gray for descriptions */
+        font-size: 0.8rem;
+        margin-top: 2px;
+    }
+
+    .history-row-item:hover {
+        background: rgba(255, 255, 255, 0.05) !important;
+    }
+
+    .preview-overlay {
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.5); border-radius: 8px;
+        display: flex; align-items: center; justify-content: center;
+        opacity: 0; transition: 0.3s; color: white; text-decoration: none;
+    }
+    .scan-preview:hover .preview-overlay { opacity: 1; }
+
+    .status-indicator { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+
+    .grade-pill {
+        font-size: 0.7rem; font-weight: 800; text-transform: uppercase;
+        padding: 4px 12px; border-radius: 100px; letter-spacing: 0.5px;
+    }
+    .grade-1 { background: rgba(13, 202, 240, 0.15); color: #0dcaf0; border: 1px solid rgba(13, 202, 240, 0.3); }
+    .grade-2 { background: rgba(255, 193, 7, 0.15); color: #ffc107; border: 1px solid rgba(255, 193, 7, 0.3); }
+    .grade-3 { background: rgba(253, 126, 20, 0.15); color: #fd7e14; border: 1px solid rgba(253, 126, 20, 0.3); }
+    .grade-4 { background: rgba(220, 53, 69, 0.15); color: #dc3545; border: 1px solid rgba(220, 53, 69, 0.3); }
+
+    .pulse-red {
+        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
+        animation: pulse-red 2s infinite;
+    }
+    @keyframes pulse-red {
+        0% { transform: scale(0.95); }
+        70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(220, 53, 69, 0); }
+        100% { transform: scale(0.95); }
+    }
+
+    @media (max-width: 992px) {
+        .history-row-item { grid-template-columns: 80px 1fr 1fr !important; gap: 15px; }
+        .header-text:nth-child(4), .header-text:nth-child(5) { display: none; }
+    }
+</style>
+
+{% endblock %}

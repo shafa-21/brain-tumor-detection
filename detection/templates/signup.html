@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup | NeuroScan AI</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-dark: #020617;
+            --accent: #2dd4bf;
+            --accent-glow: rgba(45, 212, 191, 0.15);
+            --glass: rgba(15, 23, 42, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            overflow-y: auto; /* Fixed: Allows scrolling if content overflows */
+        }
+
+        /* --- Dynamic Background --- */
+        .glow-wrapper {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .glow-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.4;
+            animation: drift 20s infinite alternate;
+        }
+
+        .orb-1 { width: 500px; height: 500px; background: var(--accent-glow); top: -10%; right: -10%; }
+        .orb-2 { width: 400px; height: 400px; background: rgba(56, 189, 248, 0.1); bottom: -10%; left: -10%; }
+
+        @keyframes drift {
+            from { transform: translate(0, 0); }
+            to { transform: translate(50px, 30px); }
+        }
+
+        /* --- Glass Card --- */
+        .signup-container {
+            width: 90%;
+            max-width: 450px;
+            padding: 3rem 2.5rem;
+            background: var(--glass);
+            backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            border-radius: 28px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+            text-align: center;
+            margin: 2rem 0; /* Ensures space when scrolling on mobile */
+            animation: fadeUp 0.8s ease-out forwards;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .signup-header h2 {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .signup-header p {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+        }
+
+        /* --- Form Elements --- */
+        .form-group {
+            position: relative;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #475569;
+            font-size: 14px;
+            transition: 0.3s;
+            pointer-events: none; /* Icons won't block clicks */
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px 15px 14px 48px;
+            background: rgba(2, 6, 23, 0.6) !important;
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            color: #fff !important;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        /* Fix for potential white background in some browsers */
+        .form-group input:-webkit-autofill {
+            -webkit-box-shadow: 0 0 0 30px #0f172a inset !important;
+            -webkit-text-fill-color: white !important;
+        }
+
+        .form-group input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 15px rgba(45, 212, 191, 0.2);
+            background: rgba(2, 6, 23, 0.8) !important;
+        }
+
+        .form-group input:focus + i {
+            color: var(--accent);
+        }
+
+        /* --- Action Button --- */
+        .signup-btn {
+            width: 100%;
+            padding: 16px;
+            background: var(--accent);
+            border: none;
+            border-radius: 14px;
+            color: #020617;
+            font-size: 16px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            margin-top: 10px;
+            box-shadow: 0 10px 20px -5px rgba(45, 212, 191, 0.4);
+        }
+
+        .signup-btn:hover {
+            background: #fff;
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px -5px rgba(45, 212, 191, 0.5);
+        }
+
+        /* --- Footer --- */
+        .signup-footer {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .signup-footer a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 700;
+            margin-left: 5px;
+        }
+
+        .signup-footer a:hover {
+            text-decoration: underline;
+        }
+
+        .error-box {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: #f87171;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .text-accent { color: var(--accent); }
+    </style>
+</head>
+<body>
+
+    <div class="glow-wrapper">
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+    </div>
+
+    <div class="signup-container">
+        <div class="signup-header">
+            <h2>Create <span class="text-accent">Account</span></h2>
+            <p>Join the NeuroScan AI Medical Network</p>
+        </div>
+
+        {% if form.errors %}
+        <div class="error-box">
+            <i class="fas fa-circle-exclamation me-2"></i>
+            <strong>Please correct the errors below:</strong>
+            <div class="small mt-1">{{ form.errors }}</div>
+        </div>
+        {% endif %}
+
+        <form method="POST" id="signupForm">
+            {% csrf_token %}
+
+            <div class="form-group">
+                {{ form.username }}
+                <i class="fas fa-user"></i>
+            </div>
+
+            <div class="form-group">
+                {{ form.email }}
+                <i class="fas fa-envelope"></i>
+            </div>
+
+            <div class="form-group">
+                {{ form.password1 }}
+                <i class="fas fa-lock"></i>
+            </div>
+
+            <div class="form-group">
+                {{ form.password2 }}
+                <i class="fas fa-shield-halved"></i>
+            </div>
+
+            <button type="submit" class="signup-btn">Create Account</button>
+        </form>
+
+        <div class="signup-footer">
+            <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const placeholders = {
+                'username': 'Username',
+                'email': 'name@gmail.com',
+                'password1': 'Create a secure password',
+                'password2': 'Confirm your password'
+            };
+
+            for (const [name, text] of Object.entries(placeholders)) {
+                const input = document.querySelector(`input[name="${name}"]`);
+                if (input) {
+                    input.setAttribute('placeholder', text);
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>

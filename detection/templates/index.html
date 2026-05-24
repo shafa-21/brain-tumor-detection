@@ -1,0 +1,360 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuroScan AI | Precision Medical Analysis</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-dark: #020617;
+            --accent: #2dd4bf;
+            --accent-glow: rgba(45, 212, 191, 0.2);
+            --glass: rgba(15, 23, 42, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-muted: #94a3b8;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-dark);
+            color: #f8fafc;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* --- Dynamic Background Effects --- */
+        .glow-wrapper {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .glow-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.4;
+            animation: drift 20s infinite alternate;
+        }
+
+        .orb-1 { width: 500px; height: 500px; background: var(--accent-glow); top: -10%; right: -10%; }
+        .orb-2 { width: 400px; height: 400px; background: rgba(56, 189, 248, 0.1); bottom: -10%; left: -10%; animation-delay: -5s; }
+
+        @keyframes drift {
+            from { transform: translate(0, 0) scale(1); }
+            to { transform: translate(100px, 50px) scale(1.1); }
+        }
+
+        /* --- Refined Navbar --- */
+        .navbar {
+            background: rgba(2, 6, 23, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 1rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-brand {
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: var(--accent) !important;
+            font-size: 1.4rem;
+            text-shadow: 0 0 15px rgba(45, 212, 191, 0.3);
+        }
+
+        .nav-link {
+            color: #94a3b8 !important;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            position: relative;
+            padding: 0.5rem 1.2rem !important;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--accent) !important;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 50%; width: 0; height: 2px;
+            background: var(--accent);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+            box-shadow: 0 0 10px var(--accent);
+        }
+
+        .nav-link:hover::after, .nav-link.active::after {
+            width: 20px;
+        }
+
+        /* --- Buttons --- */
+        .btn-portal {
+            background: #fff;
+            color: #020617 !important;
+            padding: 10px 26px !important;
+            border-radius: 100px;
+            font-weight: 700;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: none;
+        }
+
+        .btn-portal:hover {
+            background: var(--accent);
+            box-shadow: 0 0 30px rgba(45, 212, 191, 0.5);
+            transform: scale(1.05);
+            
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            border: none; color: #020617;
+            padding: 14px 32px; border-radius: 14px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px -5px rgba(45, 212, 191, 0.3);
+        }
+
+        .btn-primary:hover {
+            background:var(--accent) !important;
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px -5px rgba(45, 212, 191, 0.4);
+        }
+
+        /* --- Hero & Cards --- */
+        .hero-title {
+            font-size: 4.5rem;
+            font-weight: 800;
+            line-height: 1;
+            letter-spacing: -3px;
+        }
+
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 28px;
+            padding: 2.5rem;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+            transition: 0.5s;
+        }
+
+        .glass-card:hover::before { left: 100%; }
+
+        .glass-card:hover {
+            transform: translateY(-12px) scale(1.02);
+            border-color: rgba(45, 212, 191, 0.4);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        /* --- Analysis Animation --- */
+        .analysis-card {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(2, 6, 23, 0.9));
+        }
+
+        .analysis-card::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 2px;
+            background: var(--accent);
+            opacity: 0.5;
+            animation: scan 3s linear infinite;
+            box-shadow: 0 0 15px var(--accent);
+        }
+
+        @keyframes scan {
+            0% { top: 0; }
+            100% { top: 100%; }
+        }
+
+        /* --- Utility --- */
+        .section-label {
+            color: var(--accent);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            font-weight: 800;
+            letter-spacing: 4px;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 6px;
+            background: rgba(45, 212, 191, 0.1);
+        }
+
+        .fade-up {
+            animation: fadeUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        footer {
+            border-top: 1px solid var(--glass-border);
+            padding: 60px 0;
+            background: rgba(2, 6, 23, 0.5);
+        }
+    </style>
+</head>
+<body>
+
+<div class="glow-wrapper">
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+</div>
+
+<nav class="navbar navbar-expand-lg sticky-top">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
+            <i class="fa-solid fa-microchip me-2"></i>NEUROSCAN
+        </a>
+        
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+            <i class="fa-solid fa-bars-staggered text-white"></i>
+        </button>
+
+        <div class="collapse navbar-collapse" id="nav">
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}">Home</a></li>
+                <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'detect' %}active{% endif %}" href="{% url 'detect' %}">Detection</a></li>
+                <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'user_dashboard' %}active{% endif %}" href="{% url 'user_dashboard' %}">Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'appointment' %}active{% endif %}" href="{% url 'appointment' %}">Patient Register</a></li>
+                <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'drug_check' %}active{% endif %}" href="{% url 'drug_check' %}">Drug Efficiency</a></li>
+            </ul>
+            
+            <div class="d-flex align-items-center mt-3 mt-lg-0">
+                <a class="btn-portal" href="{% url 'doctor_login' %}">Dr Portal</a>
+                <a href="{% url 'logout' %}" class="ms-4 text-secondary text-decoration-none hover-opacity" title="Logout">
+                    <i class="fa-solid fa-power-off"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-5 pt-lg-5">
+    {% block content %}
+    
+    <div class="row align-items-center mb-5 pb-5 fade-up">
+        <div class="col-lg-7">
+            <span class="section-label">Next-Gen Diagnostics</span>
+            <h1 class="hero-title mb-4">
+                Redefining Brain <br><span style="color: var(--accent);">Imaging with AI.</span>
+            </h1>
+            <p class="text-secondary fs-5 mb-5 w-75 lh-base">
+                Utilizing state-of-the-art Deep Learning to assist radiologists in identifying neuro-pathologies with unprecedented precision.
+            </p>
+            <div class="d-flex gap-3">
+                <a href="{% url 'detect' %}" class="btn btn-primary">Launch Scanner</a>
+               
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="glass-card analysis-card text-center">
+                <div class="p-3 rounded-circle bg-dark border border-secondary d-inline-block mb-3">
+                    <i class="fa-solid fa-brain fa-2x" style="color: var(--accent);"></i>
+                </div>
+                <h4 class="mt-2 fw-bold">Neural Analysis</h4>
+                <p class="text-secondary small">Model: NeuroV3-Heavy (Ensemble)</p>
+                <hr class="border-secondary opacity-25">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="small text-secondary">Inference Time</span>
+                    <span class="small text-white fw-bold">~450ms</span>
+                </div>
+                <div class="progress" style="height: 8px; background: rgba(255,255,255,0.05); border-radius: 10px;">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 98%; background: var(--accent);"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="glass-card h-100" style="background: linear-gradient(145deg, rgba(45, 212, 191, 0.1), transparent);">
+                <h2 class="fw-extrabold mb-1" style="color: var(--accent);">99.2%</h2>
+                <p class="text-secondary mb-0 fw-bold">Sensitivity Rate</p>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="glass-card h-100">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h5 class="fw-bold">Trusted by Medical Institutions</h5>
+                        <p class="text-secondary mb-0 small">Integrated into 15+ leading oncology research centers nationwide.</p>
+                    </div>
+                    <div class="col-md-4 text-end d-none d-md-block">
+                        <i class="fa-solid fa-hospital-user fa-3x opacity-25"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-12 mt-5 text-center">
+            <span class="section-label">System Architecture</span>
+            <h2 class="fw-bold mb-5">How it Works</h2>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="glass-card h-100 border-0">
+                <div class="mb-4 d-inline-block p-3 rounded-4" style="background: rgba(45, 212, 191, 0.1);">
+                    <i class="fa-solid fa-cloud-arrow-up fs-3" style="color: var(--accent);"></i>
+                </div>
+                <h5 class="fw-bold">1. Secure Ingestion</h5>
+                <p class="text-secondary small">Upload MRI scans in NIfTI or DICOM formats. All data is encrypted using AES-256 standards.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="glass-card h-100 border-0">
+                <div class="mb-4 d-inline-block p-3 rounded-4" style="background: rgba(45, 212, 191, 0.1);">
+                    <i class="fa-solid fa-wand-magic-sparkles fs-3" style="color: var(--accent);"></i>
+                </div>
+                <h5 class="fw-bold">2. AI Augmentation</h5>
+                <p class="text-secondary small">A hybrid Deep Learning model using RNN and LSTM layers analyzes sequential MRI patterns.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="glass-card h-100 border-0">
+                <div class="mb-4 d-inline-block p-3 rounded-4" style="background: rgba(45, 212, 191, 0.1);">
+                    <i class="fa-solid fa-chart-line fs-3" style="color: var(--accent);"></i>
+                </div>
+                <h5 class="fw-bold">3. Clinical Insight</h5>
+                <p class="text-secondary small">Access real-time diagnostic insights and probability scores through an interactive dashboard.</p>
+            </div>
+        </div>
+    </div>
+
+    {% endblock %}
+</div>
+
+<footer>
+    <div class="container text-center">
+        <div class="mb-4">
+            <i class="fa-solid fa-microchip me-3 fs-4" style="color: var(--accent);"></i>
+            <span class="fw-bold text-white letter-spacing-2">NEUROSCAN AI</span>
+        </div>
+        <p class="mb-0 small ">&copy; 2026 NeuroScan AI Systems. For clinical research assistance only.</p>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

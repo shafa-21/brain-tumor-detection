@@ -1,0 +1,217 @@
+{% extends 'index.html' %}
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+
+        <div class="glass-card mb-4">
+            <h2 class="text-center mb-4">
+                <i class="fa-solid fa-microscope me-2"></i>Tumor Analysis
+            </h2>
+
+            <form method="POST" enctype="multipart/form-data" id="uploadForm" class="text-center">
+                {% csrf_token %}
+
+                <div class="upload-zone p-5 mb-3" id="drop-area"
+                     style="border: 2px dashed var(--glass-border); border-radius: 12px; cursor: pointer; transition: 0.3s;">
+
+                    <i class="fa-solid fa-cloud-arrow-up fa-3x mb-3 text-secondary"></i>
+                    <p class="text-secondary">Drag & drop MRI scan or click to browse</p>
+
+                    <input type="file" name="image" id="imageInput" hidden accept="image/*" required>
+
+                    <button type="button" class="btn btn-outline-light btn-sm"
+                            onclick="document.getElementById('imageInput').click()">
+                        Select File
+                    </button>
+
+                    <div id="file-name-display" class="mt-2 text-info small"></div>
+
+                    <div class="mt-3">
+                        <img id="previewImage" class="img-fluid rounded d-none"
+                             style="max-height: 200px; border:1px solid var(--glass-border);">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 py-3 mt-2 shadow" id="submitBtn">
+                    <i class="fa-solid fa-wand-sparkles me-2"></i>Run AI Detection
+                </button>
+
+                <div id="loader" class="mt-3 text-info d-none">
+                    <i class="fa-solid fa-spinner fa-spin me-2"></i>Analyzing MRI Scan...
+                </div>
+
+            </form>
+        </div>
+
+        {% if result %}
+        <div class="glass-card fade-in"
+             style="border-left: 5px solid {{ border_color }};">
+
+            <div class="row align-items-center">
+
+                <div class="col-md-5 text-center">
+                    <img src="{{ image_url }}"
+                         class="img-fluid rounded shadow-sm mb-3"
+                         alt="Analyzed Scan"
+                         style="max-height: 250px; border: 1px solid var(--glass-border);">
+
+                    <div class="badge bg-dark border border-secondary p-2 w-100">
+                        Processed Scan
+                    </div>
+                </div>
+
+                <div class="col-md-7">
+                    <h3 class="fw-bold mb-1">{{ result }}</h3>
+
+                    <p class="text-secondary small mb-3">
+                        Model Confidence: <strong>{{ confidence }}%</strong>
+                    </p>
+
+                    <hr class="opacity-25">
+
+                    {% if result == "Glioma Tumor" %}
+                    <div class="mb-3">
+                        <label class="small text-uppercase text-secondary">
+                            Diagnostic Stage
+                        </label>
+                        <h5 class="text-info">{{ stage }}</h5>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="small text-uppercase text-secondary">
+                            Severity Index
+                        </label>
+
+                        <div class="progress bg-dark" style="height: 10px;">
+                            <div class="progress-bar {{ progress_class }}"
+                                 role="progressbar"
+                                 style="width: {{ severity }}%;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-3 rounded bg-white bg-opacity-5 border border-secondary">
+                        <h6 class="text-accent">
+                            <i class="fa-solid fa-capsules me-2"></i>Recommended Protocol:
+                        </h6>
+
+                        <p class="mb-2">
+                            <strong>Drugs:</strong>
+
+                            {% if drugs_list %}
+                                {% for drug in drugs_list %}
+                                    <a href="{% url 'drug_check' %}?drug={{ drug|urlencode }}"
+                                       class="badge bg-info text-dark me-1 mb-1 drug-badge">
+                                        {{ drug }}
+                                    </a>
+                                {% endfor %}
+                            {% else %}
+                                <span class="text-warning ms-2">Consult doctor</span>
+                            {% endif %}
+                        </p>
+
+                        <p class="small text-secondary italic mb-0">
+                            {{ drug_note }}
+                        </p>
+                    </div>
+                    {% endif %}
+
+                    {% if result == "No Tumor Detected" %}
+                    <div class="p-3 rounded bg-success bg-opacity-10 border border-success">
+                        <h5 class="text-success mb-2">
+                            <i class="fa-solid fa-circle-check me-2"></i>
+                            Healthy Scan
+                        </h5>
+
+                        <p class="mb-0 text-light">
+                            No tumor patterns were detected in the uploaded MRI scan.
+                            No treatment protocol is required.
+                        </p>
+                    </div>
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+    const fileInput = document.getElementById('imageInput');
+    const nameDisplay = document.getElementById('file-name-display');
+    const dropArea = document.getElementById('drop-area');
+    const preview = document.getElementById('previewImage');
+    const form = document.getElementById('uploadForm');
+    const loader = document.getElementById('loader');
+    const submitBtn = document.getElementById('submitBtn');
+
+    dropArea.addEventListener("click", () => fileInput.click());
+
+    fileInput.addEventListener('change', function() {
+        handleFile(this.files[0]);
+    });
+
+    dropArea.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        dropArea.style.borderColor = "var(--accent-color)";
+    });
+
+    dropArea.addEventListener("dragleave", () => {
+        dropArea.style.borderColor = "var(--glass-border)";
+    });
+
+    dropArea.addEventListener("drop", (e) => {
+        e.preventDefault();
+        const file = e.dataTransfer.files[0];
+        fileInput.files = e.dataTransfer.files;
+        handleFile(file);
+    });
+
+    function handleFile(file) {
+        if (!file) return;
+
+        nameDisplay.textContent = "Selected: " + file.name;
+        dropArea.style.borderColor = "var(--accent-color)";
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+            preview.classList.remove("d-none");
+        };
+        reader.readAsDataURL(file);
+    }
+
+    form.addEventListener("submit", function() {
+        loader.classList.remove("d-none");
+        submitBtn.disabled = true;
+    });
+
+});
+</script>
+
+<style>
+.text-accent {
+    color: var(--accent-color);
+}
+
+.bg-opacity-5 {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+
+.drug-badge {
+    transition: 0.2s;
+}
+
+.drug-badge:hover {
+    transform: scale(1.05);
+    background-color: #22d3ee !important;
+}
+</style>
+
+{% endblock %}

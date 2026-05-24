@@ -147,42 +147,27 @@ Output:
 ## 📁 Project Structure
 brain_tumor_detection/
 │
-├── brain_tumor_detection/ # Django main project settings
-│ ├── init.py
-│ ├── settings.py
-│ ├── urls.py
-│ ├── asgi.py
-│ └── wsgi.py
+├── brain_tumor_detection/   # Django settings
+│   ├── settings.py
+│   ├── urls.py
+│   ├── wsgi.py
 │
-├── detection/ # Main app (AI + logic)
-│ ├── migrations/
-│ ├── init.py
-│ ├── admin.py
-│ ├── apps.py
-│ ├── models.py
-│ ├── tests.py
-│ ├── views.py
-│ ├── urls.py
+├── detection/               # Main AI app
+│   ├── models.py
+│   ├── views.py
+│   ├── urls.py
 │
-├── dataset/ # Training dataset (MRI images)
+├── dataset/                 # Training MRI dataset
+├── media/                   # Uploaded images
+├── templates/               # HTML files
+│   ├── index.html
+│   ├── login.html
+│   ├── dashboard.html
 │
-├── media/ # Uploaded MRI images (user uploads)
-│
-├── templates/ # HTML pages
-│ ├── index.html
-│ ├── login.html
-│ ├── signup.html
-│ ├── dashboard.html
-│ ├── detection.html
-│ ├── doctor_dashboard.html
-│ ├── appointment.html
-│ ├── drug_efficiency.html
-│
-├── db.sqlite3 # Database file
-├── manage.py # Django entry point
-├── brain_tumor.h5 # Trained CNN model
+├── db.sqlite3
+├── manage.py
+├── brain_tumor.h5
 ├── requirements.txt
-├── .gitignore
 └── README.md
 
 
